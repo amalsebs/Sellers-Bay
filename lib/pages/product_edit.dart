@@ -6,7 +6,8 @@ class ProductEditPage extends StatefulWidget {
   final Map<String, dynamic> product;
   final int productIndex;
 
-  ProductEditPage({this.addProduct, this.updateProduct, this.product,this.productIndex});
+  ProductEditPage(
+      {this.addProduct, this.updateProduct, this.product, this.productIndex});
 
   @override
   State<StatefulWidget> createState() {
@@ -80,22 +81,20 @@ class _ProductEditPageState extends State<ProductEditPage> {
       return;
     }
     _formKey.currentState.save();
-    if(widget.product == null) {
+    if (widget.product == null) {
       widget.addProduct(_formData);
-    }
-    else{
-      widget.updateProduct(widget.productIndex,_formData);
+    } else {
+      widget.updateProduct(widget.productIndex, _formData);
     }
     Navigator.pushReplacementNamed(context, '/product');
   }
 
-  @override
-  Widget build(BuildContext context) {
+  Widget _buildPageContent(BuildContext context) {
     final double deviceWidth = MediaQuery.of(context).size.width;
     final double targetWidth =
         deviceWidth > 550.0 ? 500.0 : MediaQuery.of(context).size.width * 0.9;
     final double targetPadding = deviceWidth - targetWidth;
-    final Widget pageContent = GestureDetector(
+    return GestureDetector(
       onTap: () {
         FocusScope.of(context).requestFocus(FocusNode());
       },
@@ -123,6 +122,11 @@ class _ProductEditPageState extends State<ProductEditPage> {
         ),
       ),
     );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final Widget pageContent = _buildPageContent(context);
     return widget.product == null
         ? pageContent
         : Scaffold(
