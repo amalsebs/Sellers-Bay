@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:sellers_bay/models/product.dart';
 import 'package:sellers_bay/widgets/products/address_tag.dart';
 import 'package:sellers_bay/widgets/products/price_tag.dart';
 import 'package:sellers_bay/widgets/ui_elements/title_default.dart';
 
 class ProductCard extends StatelessWidget {
-  final Map<String, dynamic> product;
+  final Product product;
   final int productIndex;
   Widget _buildTitlePriceRow() {
     return Container(
@@ -12,11 +13,11 @@ class ProductCard extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          TitleDefault(product['title']),
+          TitleDefault(product.title),
           SizedBox(
             width: 8.0,
           ),
-          PriceTag(product['price'].toString()),
+          PriceTag(product.price.toString()),
         ],
       ),
     );
@@ -47,7 +48,7 @@ class ProductCard extends StatelessWidget {
     return Card(
       child: Column(
         children: <Widget>[
-          Image.asset(product['image']),
+          Image.asset(product.image),
           SizedBox(
             height: 10.0,
           ),
