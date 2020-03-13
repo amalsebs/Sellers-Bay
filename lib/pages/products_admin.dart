@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:sellers_bay/models/product.dart';
 import 'package:sellers_bay/pages/product_edit.dart';
 import './product_list.dart';
 

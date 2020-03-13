@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
-import 'package:sellers_bay/scoped-models/products.dart';
+import 'package:sellers_bay/scoped-models/main.dart';
 // import 'package:flutter/rendering.dart';
-
 import './pages/auth.dart';
 import './pages/products_admin.dart';
 import './pages/products.dart';
 import './pages/product.dart';
-import 'models/product.dart';
 
 void main() {
   // debugPaintSizeEnabled = true;
@@ -26,8 +24,8 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
-    return ScopedModel<ProductsModel>(
-      model: ProductsModel(),
+    return ScopedModel<MainModel>(
+      model: MainModel(),
       child:MaterialApp(
       // debugShowMaterialGrid: true,
       theme: ThemeData(
