@@ -103,6 +103,7 @@ class ProductsModel extends ConnectedProductsModel {
           userId: selectedProduct.userId);
       _products[selectedProductIndex] = updatedProduct;
       notifyListeners();
+      _selProductIndex=null;
     });
   }
 
@@ -147,6 +148,7 @@ class ProductsModel extends ConnectedProductsModel {
       _products = fetchedProductList;
       _isLoading = false;
       notifyListeners();
+      //_selProductIndex=null;
     });
   }
 
