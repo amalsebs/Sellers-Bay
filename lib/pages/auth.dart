@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-
 import 'package:scoped_model/scoped_model.dart';
-
+import 'package:sellers_bay/models/auth.dart';
 import '../scoped-models/main.dart';
 
 class AuthPage extends StatefulWidget {
@@ -18,6 +17,8 @@ class _AuthPageState extends State<AuthPage> {
     'acceptTerms': false
   };
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final TextEditingController _passwordTextController = TextEditingController();
+  AuthMode _authMode = AuthMode.Login;
 
   DecorationImage _buildBackgroundImage() {
     return DecorationImage(
@@ -47,11 +48,26 @@ class _AuthPageState extends State<AuthPage> {
     );
   }
 
+  Widget _buildPasswordConfirmTextField() {
+    return TextFormField(
+      decoration: InputDecoration(
+          labelText: 'Confirm Password', filled: true, fillColor: Colors.white),
+      obscureText: true,
+      validator: (String value) {
+        if (_passwordTextController.text != value) {
+          return 'Passwords do not match';
+        }
+        return null;
+      },
+    );
+  }
+
   Widget _buildPasswordTextField() {
     return TextFormField(
       decoration: InputDecoration(
           labelText: 'Password', filled: true, fillColor: Colors.white),
       obscureText: true,
+      controller: _passwordTextController,
       validator: (String value) {
         if (value.isEmpty || value.length < 6) {
           return 'Password invalid';
@@ -76,22 +92,54 @@ class _AuthPageState extends State<AuthPage> {
     );
   }
 
-  void _submitForm(Function login) {
-    if (!_formKey.currentState.validate() || !_formData['acceptTerms']) {
-      return;
+  void _submitForm(Function authenticate) async {
+    if (_authMode == AuthMode.Signup) {
+      if (!_formKey.currentState.validate() || !_formData['acceptTerms']) {
+        return;
+      }
+    } else {
+      if (!_formKey.currentState.validate()) {
+        return;
+      }
     }
     _formKey.currentState.save();
-    login(_formData['email'], _formData['password']);
-    Navigator.pushReplacementNamed(context, '/products');
+    Map<String, dynamic> successInformation = await authenticate(
+      _formData['email'],
+      _formData['password'],
+      _authMode,
+    );
+
+    if (successInformation['success']) {
+      Navigator.pushReplacementNamed(context, '/');
+    } else {
+      showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('An Error Occurred!'),
+              content: Text(successInformation['message']),
+              actions: <Widget>[
+                FlatButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: Text('Okay'))
+              ],
+            );
+          });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final double deviceWidth = MediaQuery.of(context).size.width;
-    final double targetWidth = deviceWidth > 550.0 ? 500.0 : deviceWidth * 0.95;
+    final double targetWidth = deviceWidth > 550.0 ? 500.0 : deviceWidth * 0.90;
     return Scaffold(
       appBar: AppBar(
-        title: Text('Login'),
+        title: Padding(
+          padding: const EdgeInsets.only(left: 10.0),
+          child:
+              Text('${_authMode == AuthMode.Signup ? 'Signup' : 'Login'} Page'),
+        ),
+        automaticallyImplyLeading: false,
       ),
       body: Container(
         decoration: BoxDecoration(
@@ -111,18 +159,47 @@ class _AuthPageState extends State<AuthPage> {
                       height: 10.0,
                     ),
                     _buildPasswordTextField(),
-                    _buildAcceptSwitch(),
+                    SizedBox(
+                      height: 10.0,
+                    ),
+                    _authMode == AuthMode.Signup
+                        ? _buildPasswordConfirmTextField()
+                        : Container(),
+                    _authMode == AuthMode.Signup
+                        ? _buildAcceptSwitch()
+                        : Container(),
+                    SizedBox(
+                      height: 10.0,
+                    ),
+                    FlatButton(
+                      onPressed: () {
+                        setState(() {
+                          _authMode = _authMode == AuthMode.Login
+                              ? AuthMode.Signup
+                              : AuthMode.Login;
+                        });
+                      },
+                      child: Text(
+                        'Switch to ${_authMode == AuthMode.Login ? 'Signup' : 'Login'}',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      color: Theme.of(context).accentColor,
+                    ),
                     SizedBox(
                       height: 10.0,
                     ),
                     ScopedModelDescendant<MainModel>(
                       builder: (BuildContext context, Widget child,
                           MainModel model) {
-                        return RaisedButton(
-                          textColor: Colors.white,
-                          child: Text('LOGIN'),
-                          onPressed: () => _submitForm(model.login),
-                        );
+                        return model.isLoading
+                            ? CircularProgressIndicator()
+                            : RaisedButton(
+                                textColor: Colors.white,
+                                child: Text(
+                                    '${_authMode == AuthMode.Signup ? 'SIGNUP' : 'LOGIN'}'),
+                                onPressed: () =>
+                                    _submitForm(model.authenticate),
+                              );
                       },
                     ),
                   ],
