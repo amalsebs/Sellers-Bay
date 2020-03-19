@@ -28,6 +28,8 @@ dependencies:
   shared_preferences: ^0.5.6+3
   rxdart: ^0.23.1
   #map_view: ^0.0.14
+  image_picker: ^0.6.3+4
+  mime: ^0.9.6+3
 
 dev_dependencies:
   flutter_test:
