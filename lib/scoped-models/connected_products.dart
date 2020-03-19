@@ -14,6 +14,98 @@ class ConnectedProductsModel extends Model {
   User _authenticatedUser;
   bool _isLoading = false;
 
+  bool _showFavorites = false;
+
+  List<Product> get allProducts {
+    return List.from(_products);
+  }
+
+  List<Product> get displayedProducts {
+    if (_showFavorites) {
+      return _products.where((Product product) => product.isFavorite).toList();
+    }
+    return List.from(_products);
+  }
+
+  String get selectedProductId {
+    return _selProductId;
+  }
+
+  Product get selectedProduct {
+    if (selectedProductId == null) {
+      return null;
+    }
+    return _products.firstWhere((Product product) {
+      return product.id == _selProductId;
+    });
+  }
+
+  void toggleDisplayMode() {
+    _showFavorites = !_showFavorites;
+    notifyListeners();
+  }
+
+  bool get displayFavoritesOnly {
+    return _showFavorites;
+  }
+
+  void selectProduct(String productId) {
+    _selProductId = productId;
+    notifyListeners();
+  }
+
+  int get selectedProductIndex {
+    return _products.indexWhere((Product product) {
+      return product.id == _selProductId;
+    });
+  }
+}
+
+class ProductsModel extends ConnectedProductsModel {
+  Future<Null> fetchProducts({onlyForUser = false}) {
+    _isLoading = true;
+    notifyListeners();
+    return http
+        .get(
+            'https://sellers-bay1.firebaseio.com/products.json?auth=${_authenticatedUser.token}')
+        .then<Null>((http.Response response) {
+      final List<Product> fetchedProductList = [];
+      final Map<String, dynamic> productListData = json.decode(response.body);
+      if (productListData == null) {
+        _isLoading = false;
+        notifyListeners();
+        return;
+      }
+      productListData.forEach((String productId, dynamic productData) {
+        final Product product = Product(
+            id: productId,
+            title: productData['title'],
+            description: productData['description'],
+            image: productData['image'],
+            price: productData['price'],
+            userEmail: productData['userEmail'],
+            userId: productData['userId'],
+            isFavorite: productData['wishlistUsers']
+                ? false
+                : (productData['wishlistUsers'] as Map<String, dynamic>)
+                    .containsKey(_authenticatedUser.id));
+        fetchedProductList.add(product);
+      });
+      _products = onlyForUser
+          ? fetchedProductList.where((Product product) {
+              return product.userId == _authenticatedUser.id;
+            }).toList()
+          : fetchedProductList;
+      _isLoading = false;
+      notifyListeners();
+      //_selProductIndex=null;
+    }).catchError((error) {
+      _isLoading = false;
+      notifyListeners();
+      return;
+    });
+  }
+
   Future<bool> addProduct(
       String title, String description, String image, double price) async {
     _isLoading = true;
@@ -47,7 +139,7 @@ class ConnectedProductsModel extends Model {
           userId: _authenticatedUser.id);
       _products.add(newProduct);
       _isLoading = false;
-      _selProductId=null;
+      _selProductId = null;
       notifyListeners();
       return true;
     } catch (error) {
@@ -55,44 +147,6 @@ class ConnectedProductsModel extends Model {
       notifyListeners();
       return false;
     }
-  }
-}
-
-class ProductsModel extends ConnectedProductsModel {
-  bool _showFavorites = false;
-
-  List<Product> get allProducts {
-    return List.from(_products);
-  }
-
-  List<Product> get displayedProducts {
-    if (_showFavorites) {
-      return _products.where((Product product) => product.isFavorite).toList();
-    }
-    return List.from(_products);
-  }
-
-  String get selectedProductId {
-    return _selProductId;
-  }
-
-  Product get selectedProduct {
-    if (selectedProductId == null) {
-      return null;
-    }
-    return _products.firstWhere((Product product) {
-      return product.id == _selProductId;
-    });
-  }
-
-  bool get displayFavoritesOnly {
-    return _showFavorites;
-  }
-
-  int get selectedProductIndex {
-    return _products.indexWhere((Product product) {
-      return product.id == _selProductId;
-    });
   }
 
   Future<bool> updateProduct(
@@ -151,43 +205,7 @@ class ProductsModel extends ConnectedProductsModel {
     });
   }
 
-  Future<Null> fetchProducts() {
-    _isLoading = true;
-    notifyListeners();
-    return http
-        .get(
-            'https://sellers-bay1.firebaseio.com/products.json?auth=${_authenticatedUser.token}')
-        .then<Null>((http.Response response) {
-      final List<Product> fetchedProductList = [];
-      final Map<String, dynamic> productListData = json.decode(response.body);
-      if (productListData == null) {
-        _isLoading = false;
-        notifyListeners();
-        return;
-      }
-      productListData.forEach((String productId, dynamic productData) {
-        final Product product = Product(
-            id: productId,
-            title: productData['title'],
-            description: productData['description'],
-            image: productData['image'],
-            price: productData['price'],
-            userEmail: productData['userEmail'],
-            userId: productData['userId']);
-        fetchedProductList.add(product);
-      });
-      _products = fetchedProductList;
-      _isLoading = false;
-      notifyListeners();
-      //_selProductIndex=null;
-    }).catchError((error) {
-      _isLoading = false;
-      notifyListeners();
-      return;
-    });
-  }
-
-  void toggleProductFavoriteStatus() {
+  void toggleProductFavoriteStatus() async {
     final bool isCurrentlyFavorite = selectedProduct.isFavorite;
     final bool newFavoriteStatus = !isCurrentlyFavorite;
     final Product updatedProduct = Product(
@@ -201,16 +219,30 @@ class ProductsModel extends ConnectedProductsModel {
         isFavorite: newFavoriteStatus);
     _products[selectedProductIndex] = updatedProduct;
     notifyListeners();
-  }
-
-  void selectProduct(String productId) {
-    _selProductId = productId;
-    notifyListeners();
-  }
-
-  void toggleDisplayMode() {
-    _showFavorites = !_showFavorites;
-    notifyListeners();
+    http.Response response;
+    if (newFavoriteStatus) {
+      response = await http.put(
+        'https://sellers-bay1.firebaseio.com/products/${selectedProduct.id}/wishlistUsers/${_authenticatedUser.id}.json?=${_authenticatedUser.token}',
+        body: json.encode(true),
+      );
+    } else {
+      response = await http.delete(
+        'https://sellers-bay1.firebaseio.com/products/${selectedProduct.id}/wishlistUsers/${_authenticatedUser.id}.json?=${_authenticatedUser.token}',
+      );
+    }
+    if (response.statusCode != 200 || response.statusCode != 201) {
+      final Product updatedProduct = Product(
+          id: selectedProduct.id,
+          title: selectedProduct.title,
+          description: selectedProduct.description,
+          price: selectedProduct.price,
+          image: selectedProduct.image,
+          userEmail: selectedProduct.userEmail,
+          userId: selectedProduct.userId,
+          isFavorite: !newFavoriteStatus);
+      _products[selectedProductIndex] = updatedProduct;
+      notifyListeners();
+    }
   }
 }
 
@@ -310,11 +342,11 @@ class UserModel extends ConnectedProductsModel {
   void logout() async {
     _authenticatedUser = null;
     _authTimer.cancel();
+    _userSubject.add(false);
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.remove('token');
     prefs.remove('userId');
     prefs.remove('userEmail');
-    _userSubject.add(false);
   }
 
   void setAuthTimeout(int time) {
