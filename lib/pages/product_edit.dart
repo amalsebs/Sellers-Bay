@@ -24,25 +24,12 @@ class _ProductEditPageState extends State<ProductEditPage> {
   final _titleFocusNode = FocusNode();
   final _descriptionFocusNode = FocusNode();
   final _priceFocusNode = FocusNode();
-  final _titleTextController = TextEditingController();
-  final _descriptionTextController = TextEditingController();
 
   Widget _buildTitleTextField(Product product) {
-    if (product == null && _titleTextController.text.trim() == '') {
-      _titleTextController.text = '';
-    } else if (product != null && _titleTextController.text.trim() == '') {
-      _titleTextController.text = product.title;
-    } else if (product != null && _titleTextController.text.trim() != '') {
-      _titleTextController.text = _titleTextController.text;
-    } else if (product == null && _titleTextController.text.trim() != '') {
-      _titleTextController.text = _titleTextController.text;
-    } else {
-      _titleTextController.text = '';
-    }
     return TextFormField(
       focusNode: _titleFocusNode,
       decoration: InputDecoration(labelText: 'Product Title'),
-      //initialValue: product == null ? '' : product.title,
+      initialValue: product == null ? '' : product.title,
       validator: (String value) {
         // if (value.trim().length <= 0) {
         if (value.isEmpty || value.length < 5) {
@@ -56,18 +43,11 @@ class _ProductEditPageState extends State<ProductEditPage> {
   }
 
   Widget _buildDescriptionTextField(Product product) {
-    if (product == null && _descriptionTextController.text.trim() == '') {
-      _descriptionTextController.text = '';
-    } else if (product != null &&
-        _descriptionTextController.text.trim() == '') {
-      _descriptionTextController.text = product.description;
-    }
     return TextFormField(
       focusNode: _descriptionFocusNode,
       maxLines: 4,
       decoration: InputDecoration(labelText: 'Product Description'),
-      //initialValue: product == null ? '' : product.description,
-      controller: _descriptionTextController,
+      initialValue: product == null ? '' : product.description,
       validator: (String value) {
         // if (value.trim().length <= 0) {
         if (value.isEmpty || value.length < 10) {
@@ -138,7 +118,7 @@ class _ProductEditPageState extends State<ProductEditPage> {
               SizedBox(
                 height: 10.0,
               ),
-              ImageInput(_setImage, product),
+              ImageInput(setImage, product),
               SizedBox(
                 height: 10.0,
               ),
@@ -150,7 +130,7 @@ class _ProductEditPageState extends State<ProductEditPage> {
     );
   }
 
-  void _setImage(File image) {
+  void setImage(File image) {
     _formData['image'] = image;
   }
 
@@ -164,8 +144,8 @@ class _ProductEditPageState extends State<ProductEditPage> {
     _formKey.currentState.save();
     if (selectedProductIndex == -1) {
       addProduct(
-        _titleTextController,
-        _descriptionTextController,
+        _formData['title'],
+        _formData['description'],
         _formData['image'],
         _formData['price'],
       ).then((bool success) {
@@ -191,8 +171,8 @@ class _ProductEditPageState extends State<ProductEditPage> {
       });
     } else {
       updateProduct(
-        _titleTextController,
-        _descriptionTextController,
+        _formData['title'],
+        _formData['description'],
         _formData['image'],
         _formData['price'],
       ).then((_) => Navigator.pushReplacementNamed(context, '/products'));

@@ -4,7 +4,7 @@ const Busboy = require('busboy');
 const os = require('os');
 const path = require('path');
 const fs = require('fs');
-const fb = require('firebase-admin');
+const fbAdmin = require('firebase-admin');
 const uuid = require('uuid/v4');
 
 // // Create and Deploy Your First Cloud Functions
@@ -22,7 +22,7 @@ const config = {
 
 const gcs = new Storage(config);
 
-fb.initializeApp({ credential: fb.credential.cert(require('./flutter-products.json')) });
+fbAdmin.initializeApp({ credential: fbAdmin.credential.cert(require('./flutter-products.json')) });
 
 exports.storeImage = functions.https.onRequest((req, res) => {
     return cors(req, res, () => {
@@ -79,7 +79,7 @@ exports.storeImage = functions.https.onRequest((req, res) => {
                             bucket.name +
                             '/o/' +
                             encodeURIComponent(imagePath) +
-                            '?alt=media&token= ' +
+                            '?alt=media&token=' +
                             id,
                         imagePath: imagePath
                     });

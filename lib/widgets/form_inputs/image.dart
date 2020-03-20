@@ -47,7 +47,7 @@ class _ImageInputState extends State<ImageInput> {
                 ),
                 FlatButton(
                   onPressed: () {
-                    _getImage(context, ImageSource.camera);
+                    _getImage(context, ImageSource.gallery);
                   },
                   child: Text('Pick from gallery'),
                   textColor: Theme.of(context).primaryColor,
@@ -86,7 +86,9 @@ class _ImageInputState extends State<ImageInput> {
             width: 2.0,
             color: Theme.of(context).primaryColor,
           ),
-          onPressed: () => _openImagePicker,
+          onPressed: () {
+            _openImagePicker();
+          },
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[

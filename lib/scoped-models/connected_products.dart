@@ -89,20 +89,22 @@ class ProductsModel extends ConnectedProductsModel {
             price: productData['price'],
             userEmail: productData['userEmail'],
             userId: productData['userId'],
-            isFavorite: productData['wishlistUsers']
+            isFavorite: productData['wishlistUsers'] == null
                 ? false
                 : (productData['wishlistUsers'] as Map<String, dynamic>)
                     .containsKey(_authenticatedUser.id));
         fetchedProductList.add(product);
       });
-      _products = onlyForUser
-          ? fetchedProductList.where((Product product) {
-              return product.userId == _authenticatedUser.id;
-            }).toList()
-          : fetchedProductList;
+      if (onlyForUser) {
+        _products = fetchedProductList.where((Product product) {
+          return product.userEmail == _authenticatedUser.email;
+        }).toList();
+      } else {
+        _products = fetchedProductList;
+      }
       _isLoading = false;
       notifyListeners();
-      //_selProductIndex=null;
+      _selProductId = null;
     }).catchError((error) {
       _isLoading = false;
       notifyListeners();
@@ -151,6 +153,7 @@ class ProductsModel extends ConnectedProductsModel {
     final uploadData = await uploadImage(image);
     if (uploadData == null) {
       print('Upload Failed');
+      _isLoading = false;
       return false;
     }
     final Map<String, dynamic> productData = {
@@ -233,8 +236,8 @@ class ProductsModel extends ConnectedProductsModel {
           userEmail: selectedProduct.userEmail,
           userId: selectedProduct.userId);
       _products[selectedProductIndex] = updatedProduct;
-      notifyListeners();
       _selProductId = null;
+      notifyListeners();
       return true;
     } catch (error) {
       _isLoading = false;
