@@ -37,11 +37,15 @@ class ProductCard extends StatelessWidget {
             alignment: MainAxisAlignment.center,
             children: <Widget>[
               IconButton(
-                icon: Icon(Icons.info),
-                color: Theme.of(context).accentColor,
-                onPressed: () => Navigator.pushNamed<bool>(
-                    context, '/product/' + model.allProducts[productIndex].id),
-              ),
+                  icon: Icon(Icons.info),
+                  color: Theme.of(context).accentColor,
+                  onPressed: () {
+                    model.selectProduct(model.allProducts[productIndex].id);
+                    Navigator.pushNamed<bool>(context,
+                            '/product/' + model.allProducts[productIndex].id)
+                        //.then((_) => model.selectProduct(null))
+                        ;
+                  }),
               IconButton(
                 icon: Icon(model.allProducts[productIndex].isFavorite
                     ? Icons.favorite
@@ -62,15 +66,18 @@ class ProductCard extends StatelessWidget {
     return Card(
       child: Column(
         children: <Widget>[
-          FadeInImage(
-            image: NetworkImage(product.image),
-            placeholder: AssetImage('assets/food.jpg'),
-            height: 300.0,
-            fit: BoxFit.cover,
+          Hero(
+            tag: product.id,
+            transitionOnUserGestures: true,
+            child: FadeInImage(
+              image: NetworkImage(product.image),
+              placeholder: AssetImage('assets/food.jpg'),
+              height: 300.0,
+              fit: BoxFit.cover,
+            ),
           ),
           _buildTitlePriceRow(),
           AddressTag('Chandni Chowk, Delhi'),
-          Text(product.userEmail),
           _buildActionButtons(context)
         ],
       ),

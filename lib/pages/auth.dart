@@ -10,7 +10,7 @@ class AuthPage extends StatefulWidget {
   }
 }
 
-class _AuthPageState extends State<AuthPage> {
+class _AuthPageState extends State<AuthPage> with TickerProviderStateMixin {
   final Map<String, dynamic> _formData = {
     'email': null,
     'password': null,
@@ -19,6 +19,17 @@ class _AuthPageState extends State<AuthPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _passwordTextController = TextEditingController();
   AuthMode _authMode = AuthMode.Login;
+  AnimationController _controller;
+  Animation<Offset> _slideAnimation;
+
+  void initState() {
+    _controller =
+        AnimationController(vsync: this, duration: Duration(milliseconds: 300));
+    _slideAnimation = Tween<Offset>(begin: Offset(0.0, -5.0), end: Offset.zero)
+        .animate(
+            CurvedAnimation(parent: _controller, curve: Curves.fastOutSlowIn));
+    super.initState();
+  }
 
   DecorationImage _buildBackgroundImage() {
     return DecorationImage(
@@ -49,16 +60,25 @@ class _AuthPageState extends State<AuthPage> {
   }
 
   Widget _buildPasswordConfirmTextField() {
-    return TextFormField(
-      decoration: InputDecoration(
-          labelText: 'Confirm Password', filled: true, fillColor: Colors.white),
-      obscureText: true,
-      validator: (String value) {
-        if (_passwordTextController.text != value) {
-          return 'Passwords do not match';
-        }
-        return null;
-      },
+    return SlideTransition(
+      position: _slideAnimation,
+      child: FadeTransition(
+        opacity: CurvedAnimation(parent: _controller, curve: Curves.easeIn),
+        child: TextFormField(
+          decoration: InputDecoration(
+              labelText: 'Confirm Password',
+              filled: true,
+              fillColor: Colors.white),
+          obscureText: true,
+          validator: (String value) {
+            if (_passwordTextController.text != value &&
+                _authMode == AuthMode.Signup) {
+              return 'Passwords do not match';
+            }
+            return null;
+          },
+        ),
+      ),
     );
   }
 
@@ -162,21 +182,26 @@ class _AuthPageState extends State<AuthPage> {
                     SizedBox(
                       height: 10.0,
                     ),
-                    _authMode == AuthMode.Signup
-                        ? _buildPasswordConfirmTextField()
-                        : Container(),
-                    _authMode == AuthMode.Signup
-                        ? _buildAcceptSwitch()
-                        : Container(),
+                    _buildPasswordConfirmTextField(),
+                    SlideTransition(
+                      position: _slideAnimation,
+                      child: _authMode == AuthMode.Signup
+                          ? _buildAcceptSwitch()
+                          : Container(),
+                    ),
                     SizedBox(
                       height: 10.0,
                     ),
                     FlatButton(
                       onPressed: () {
                         setState(() {
-                          _authMode = _authMode == AuthMode.Login
-                              ? AuthMode.Signup
-                              : AuthMode.Login;
+                          if (_authMode == AuthMode.Login) {
+                            _authMode = AuthMode.Signup;
+                            _controller.forward();
+                          } else {
+                            _authMode = AuthMode.Login;
+                            _controller.reverse();
+                          }
                         });
                       },
                       child: Text(

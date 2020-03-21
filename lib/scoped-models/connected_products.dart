@@ -66,6 +66,7 @@ class ConnectedProductsModel extends Model {
 
 class ProductsModel extends ConnectedProductsModel {
   Future<Null> fetchProducts({onlyForUser = false}) {
+    _products = [];
     _isLoading = true;
     notifyListeners();
     return http
@@ -282,15 +283,16 @@ class ProductsModel extends ConnectedProductsModel {
     http.Response response;
     if (newFavoriteStatus) {
       response = await http.put(
-        'https://sellers-bay1.firebaseio.com/products/${selectedProduct.id}/wishlistUsers/${_authenticatedUser.id}.json?=${_authenticatedUser.token}',
+        'https://sellers-bay1.firebaseio.com/products/${selectedProduct.id}/wishlistUsers/${_authenticatedUser.id}.json?auth=${_authenticatedUser.token}',
         body: json.encode(true),
       );
     } else {
       response = await http.delete(
-        'https://sellers-bay1.firebaseio.com/products/${selectedProduct.id}/wishlistUsers/${_authenticatedUser.id}.json?=${_authenticatedUser.token}',
+        'https://sellers-bay1.firebaseio.com/products/${selectedProduct.id}/wishlistUsers/${_authenticatedUser.id}.json?auth=${_authenticatedUser.token}',
       );
     }
-    if (response.statusCode != 200 || response.statusCode != 201) {
+    print(response.statusCode);
+    if (response.statusCode != 200 && response.statusCode != 201) {
       final Product updatedProduct = Product(
           id: selectedProduct.id,
           title: selectedProduct.title,

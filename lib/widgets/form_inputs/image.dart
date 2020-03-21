@@ -87,6 +87,7 @@ class _ImageInputState extends State<ImageInput> {
             color: Theme.of(context).primaryColor,
           ),
           onPressed: () {
+            FocusScope.of(context).requestFocus(FocusNode());
             _openImagePicker();
           },
           child: Row(

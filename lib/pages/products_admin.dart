@@ -33,6 +33,7 @@ class ProductsAdminPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    model.selectProduct(null);
     return DefaultTabController(
       length: 2,
       child: Scaffold(

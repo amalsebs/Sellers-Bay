@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sellers_bay/widgets/products/product_fab.dart';
 import '../widgets/ui_elements/title_default.dart';
 import '../models/product.dart';
 
@@ -33,35 +34,54 @@ class ProductPage extends StatelessWidget {
     return WillPopScope(
       onWillPop: () {
         Navigator.pop(context, false);
+        
         return Future.value(false);
       },
       child: Scaffold(
-        appBar: AppBar(
-          title: Text(product.title),
-        ),
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            FadeInImage(
-              image: NetworkImage(product.image),
-              placeholder: AssetImage('assets/food.jpg'),
-              height: 300.0,
-              fit: BoxFit.cover,
-            ),
-            Container(
-              padding: EdgeInsets.all(10.0),
-              child: TitleDefault(product.title),
-            ),
-            _buildAddressPriceRow(product.price),
-            Container(
-              padding: EdgeInsets.all(10.0),
-              child: Text(
-                product.description,
-                textAlign: TextAlign.center,
+        // appBar: AppBar(
+        //   title: Text(product.title),
+        // ),
+        body: CustomScrollView(
+          slivers: <Widget>[
+            SliverAppBar(
+              expandedHeight: 256.0,
+              pinned: true,
+              flexibleSpace: FlexibleSpaceBar(
+                title: Text(product.title),
+                background: Hero(
+                  tag: product.id,
+                  transitionOnUserGestures: true,
+                  child: FadeInImage(
+                    image: NetworkImage(product.image),
+                    placeholder: AssetImage('assets/food.jpg'),
+                    height: 300.0,
+                    fit: BoxFit.cover,
+                  ),
+                ),
               ),
             ),
+            SliverList(
+                delegate: SliverChildListDelegate([
+              SizedBox(
+                height: 5.0,
+              ),
+              Container(
+                alignment: Alignment.center,
+                padding: EdgeInsets.all(10.0),
+                child: TitleDefault(product.title),
+              ),
+              _buildAddressPriceRow(product.price),
+              Container(
+                padding: EdgeInsets.all(10.0),
+                child: Text(
+                  product.description,
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ])),
           ],
         ),
+        floatingActionButton: ProductFAB(product),
       ),
     );
   }
