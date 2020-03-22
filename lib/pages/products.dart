@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:scoped_model/scoped_model.dart';
+import 'package:sellers_bay/widgets/ui_elements/adaptive_progress_indicator.dart';
 import 'package:sellers_bay/widgets/ui_elements/logout_listtile.dart';
 
 import '../widgets/products/products.dart';
@@ -29,6 +30,8 @@ class _ProductsPageState extends State<ProductsPage> {
       child: Column(
         children: <Widget>[
           AppBar(
+            elevation:
+                Theme.of(context).platform == TargetPlatform.iOS ? 0.0 : 4.0,
             automaticallyImplyLeading: false,
             title: Text('Choose'),
           ),
@@ -53,7 +56,7 @@ class _ProductsPageState extends State<ProductsPage> {
         if (model.displayedProducts.length > 0 && !model.isLoading) {
           content = Products();
         } else if (model.isLoading) {
-          content = Center(child: CircularProgressIndicator());
+          content = Center(child: AdaptiveProgressIndicator());
         }
         return RefreshIndicator(child: content, onRefresh: model.fetchProducts);
       },
@@ -65,6 +68,7 @@ class _ProductsPageState extends State<ProductsPage> {
     return Scaffold(
       drawer: _buildSideDrawer(context),
       appBar: AppBar(
+        elevation: Theme.of(context).platform == TargetPlatform.iOS ? 0.0 : 4.0,
         title: Text('Sellers Bay'),
         actions: <Widget>[
           ScopedModelDescendant<MainModel>(

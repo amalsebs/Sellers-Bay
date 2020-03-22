@@ -34,7 +34,6 @@ class ProductPage extends StatelessWidget {
     return WillPopScope(
       onWillPop: () {
         Navigator.pop(context, false);
-        
         return Future.value(false);
       },
       child: Scaffold(
@@ -47,7 +46,7 @@ class ProductPage extends StatelessWidget {
               expandedHeight: 256.0,
               pinned: true,
               flexibleSpace: FlexibleSpaceBar(
-                title: Text(product.title),
+                title: Flexible(child: Text(product.title)),
                 background: Hero(
                   tag: product.id,
                   transitionOnUserGestures: true,

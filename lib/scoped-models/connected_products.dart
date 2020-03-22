@@ -65,8 +65,10 @@ class ConnectedProductsModel extends Model {
 }
 
 class ProductsModel extends ConnectedProductsModel {
-  Future<Null> fetchProducts({onlyForUser = false}) {
-    _products = [];
+  Future<Null> fetchProducts({onlyForUser = false, clearExisting = false}) {
+    if (clearExisting) {
+      _products = [];
+    }
     _isLoading = true;
     notifyListeners();
     return http
@@ -222,7 +224,7 @@ class ProductsModel extends ConnectedProductsModel {
       'userId': selectedProduct.userId
     };
     try {
-      final http.Response response = await http.put(
+      await http.put(
           'https://sellers-bay1.firebaseio.com/products/${selectedProduct.id}.json?auth=${_authenticatedUser.token}',
           body: json.encode(updateData));
 
@@ -406,6 +408,7 @@ class UserModel extends ConnectedProductsModel {
     _authenticatedUser = null;
     _authTimer.cancel();
     _userSubject.add(false);
+    _selProductId = null;
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.remove('token');
     prefs.remove('userId');

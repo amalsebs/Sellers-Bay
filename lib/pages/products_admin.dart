@@ -15,6 +15,8 @@ class ProductsAdminPage extends StatelessWidget {
         children: <Widget>[
           AppBar(
             automaticallyImplyLeading: false,
+            elevation:
+              Theme.of(context).platform == TargetPlatform.iOS ? 0.0 : 4.0,
             title: Text('Choose'),
           ),
           ListTile(
@@ -40,6 +42,8 @@ class ProductsAdminPage extends StatelessWidget {
         drawer: _buildSideDrawer(context),
         appBar: AppBar(
           title: Text('Manage Products'),
+          elevation:
+              Theme.of(context).platform == TargetPlatform.iOS ? 0.0 : 4.0,
           bottom: TabBar(
             tabs: <Widget>[
               Tab(

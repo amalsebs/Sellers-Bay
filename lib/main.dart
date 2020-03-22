@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+//import 'package:flutter/services.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:sellers_bay/helpers/custom_route.dart';
 import 'package:sellers_bay/models/product.dart';
+import 'package:sellers_bay/shared/adaptive_theme.dart';
 // import 'package:flutter/rendering.dart';
 import './pages/auth.dart';
 import './pages/products_admin.dart';
@@ -26,6 +28,19 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   final MainModel _model = MainModel();
   bool _isAuthenticated = false;
+  // final _platformChannel = MethodChannel('phone-battery-status');
+
+  // Future<Null> _getBatteryLevel() async {
+  //   String batteryLevel;
+  //   try {
+  //     final int result = await _platformChannel.invokeMethod('getBatteryLevel');
+  //     batteryLevel = 'Battery level is $result%';
+  //   } catch (error) {
+  //     batteryLevel = 'Failed to get battery level';
+  //   }
+  //   print(batteryLevel);
+  // }
+
   @override
   void initState() {
     _model.autoAuthenticate();
@@ -42,12 +57,9 @@ class _MyAppState extends State<MyApp> {
     return ScopedModel<MainModel>(
       model: _model,
       child: MaterialApp(
+        title: 'Sellers Bay',
         // debugShowMaterialGrid: true,
-        theme: ThemeData(
-            brightness: Brightness.light,
-            primarySwatch: Colors.deepPurple,
-            accentColor: Colors.indigoAccent,
-            buttonColor: Colors.indigo),
+        theme: getAdaptiveTheme(context),
         // home: AuthPage(),
         routes: {
           '/': (BuildContext context) =>
