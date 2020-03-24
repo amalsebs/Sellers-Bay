@@ -16,7 +16,7 @@ class ProductsAdminPage extends StatelessWidget {
           AppBar(
             automaticallyImplyLeading: false,
             elevation:
-              Theme.of(context).platform == TargetPlatform.iOS ? 0.0 : 4.0,
+                Theme.of(context).platform == TargetPlatform.iOS ? 0.0 : 4.0,
             title: Text('Choose'),
           ),
           ListTile(
@@ -35,7 +35,7 @@ class ProductsAdminPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    model.selectProduct(null);
+    //model.selectProduct(null);
     return DefaultTabController(
       length: 2,
       child: Scaffold(

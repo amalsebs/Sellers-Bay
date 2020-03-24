@@ -56,6 +56,7 @@ class _ProductEditPageState extends State<ProductEditPage> {
         if (value.isEmpty || value.length < 5) {
           return 'Title is required and should be 5 or more characters long.';
         }
+        return null;
       },
       onSaved: (String value) {
         _formData['title'] = value;
@@ -81,6 +82,7 @@ class _ProductEditPageState extends State<ProductEditPage> {
         if (value.isEmpty || value.length < 10) {
           return 'Description is required and should be 10 or more characters long.';
         }
+        return null;
       },
       onSaved: (String value) {
         _formData['description'] = value;
@@ -106,6 +108,7 @@ class _ProductEditPageState extends State<ProductEditPage> {
             !RegExp(r'^(?:[1-9]\d*|0)?(?:[.,]\d+)?$').hasMatch(value)) {
           return 'Price is required and should be a number.';
         }
+        return null;
       },
     );
   }
@@ -134,6 +137,7 @@ class _ProductEditPageState extends State<ProductEditPage> {
     final double deviceWidth = MediaQuery.of(context).size.width;
     final double targetWidth = deviceWidth > 550.0 ? 500.0 : deviceWidth * 0.95;
     final double targetPadding = deviceWidth - targetWidth;
+  
     return GestureDetector(
       onTap: () {
         FocusScope.of(context).requestFocus(FocusNode());
@@ -151,7 +155,8 @@ class _ProductEditPageState extends State<ProductEditPage> {
               SizedBox(
                 height: 10.0,
               ),
-             LocationInput1(_setLocation, product),
+              LocationInput1(_setLocation, product),
+              //LocationInputOfUser(),
               SizedBox(
                 height: 10.0,
               ),
@@ -229,7 +234,7 @@ class _ProductEditPageState extends State<ProductEditPage> {
         final Widget pageContent =
             _buildPageContent(context, model.selectedProduct);
         return model.selectedProductIndex == -1
-            ? pageContent
+            ? Material(child: pageContent)
             : Scaffold(
                 appBar: AppBar(
                   title: Text('Edit Product'),

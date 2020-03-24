@@ -54,6 +54,7 @@ class ConnectedProductsModel extends Model {
   }
 
   void selectProduct(String productId) {
+    //print(productId);
     _selProductId = productId;
     notifyListeners();
   }
@@ -159,6 +160,8 @@ class ProductsModel extends ConnectedProductsModel {
       double price, LocationDataPro locData) async {
     _isLoading = true;
     notifyListeners();
+    locData = LocationDataPro(
+        address: 'Chandni Chowk, Delhi', latitude: 0.0, longitude: 0.0);
     final uploadData = await uploadImage(image);
     if (uploadData == null) {
       print('Upload Failed');
@@ -209,8 +212,8 @@ class ProductsModel extends ConnectedProductsModel {
     }
   }
 
-  Future<bool> updateProduct(
-      String title, String description, File image, double price, LocationDataPro locData) async {
+  Future<bool> updateProduct(String title, String description, File image,
+      double price, LocationDataPro locData) async {
     _isLoading = true;
     notifyListeners();
     String imageUrl = selectedProduct.image;

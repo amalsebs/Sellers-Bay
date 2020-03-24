@@ -18,7 +18,7 @@ class ProductListPage extends StatefulWidget {
 
 class _ProductListPageState extends State<ProductListPage> {
   @override
-  initState() {
+  initState() {  
     widget.model.fetchProducts(onlyForUser: true, clearExisting: true);
     super.initState();
   }
@@ -28,13 +28,16 @@ class _ProductListPageState extends State<ProductListPage> {
       icon: Icon(Icons.edit),
       onPressed: () {
         model.selectProduct(model.allProducts[index].id);
+        //print(model.allProducts[index].id);
         Navigator.of(context).push(
           MaterialPageRoute(
             builder: (BuildContext context) {
               return ProductEditPage();
             },
           ),
-        );
+        ).then((_){
+          model.selectProduct(null);
+        });
       },
     );
   }

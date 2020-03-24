@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:location/location.dart';
 import 'package:sellers_bay/models/location.dart';
 import 'package:sellers_bay/models/product.dart';
+import 'package:sellers_bay/shared/global__config.dart';
 
 class LocationInput1 extends StatefulWidget {
   final Function setLocation;
@@ -40,11 +41,8 @@ class _LocationInput1State extends State<LocationInput1> {
       return;
     }
     if (geocode) {
-      final Uri uri = Uri.https(
-        'maps.googleapis.com',
-        '/maps/api/geocode/json',
-        {'address': address, 'key': 'AIzaSyCbszyn-AADcE_ZmIqd-sNqb6EicaFRUpc'},
-      );
+      final Uri uri = Uri.https('maps.googleapis.com', '/maps/api/geocode/json',
+          {'address': address, 'key': apiKey});
       final http.Response response = await http.get(uri);
       final decodedResponse = json.decode(response.body);
       final formattedAddress =
@@ -75,7 +73,7 @@ class _LocationInput1State extends State<LocationInput1> {
       '/maps/api/geocode/json',
       {
         'latlng': '${latitude.toString()},${longitude.toString()}',
-        'key': 'AIzaSyCbszyn-AADcE_ZmIqd-sNqb6EicaFRUpc'
+        'key': apiKey
       },
     );
     final http.Response response = await http.get(uri);
@@ -113,6 +111,7 @@ class _LocationInput1State extends State<LocationInput1> {
             if (_locationData == null || value.isEmpty) {
               return 'No valid location found';
             }
+            return null;
           },
           decoration: InputDecoration(labelText: 'Address'),
         ),
@@ -121,11 +120,12 @@ class _LocationInput1State extends State<LocationInput1> {
         ),
         FlatButton(
           onPressed: _getUserLocation,
-          child: Text('Locate me'),
+          child: Text(
+            'Locate me',
+            style: TextStyle(color: Colors.black),
+          ),
         ),
-        SizedBox(
-          height: 5.0,
-        ),
+
         //Image.network(''),
       ],
     );

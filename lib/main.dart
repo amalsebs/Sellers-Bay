@@ -57,6 +57,7 @@ class _MyAppState extends State<MyApp> {
     return ScopedModel<MainModel>(
       model: _model,
       child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         title: 'Sellers Bay',
         // debugShowMaterialGrid: true,
         theme: getAdaptiveTheme(context),
