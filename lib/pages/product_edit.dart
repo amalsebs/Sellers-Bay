@@ -1,9 +1,11 @@
 import 'dart:io';
-
+//import 'package:location/location.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
+import 'package:sellers_bay/models/location.dart';
 import 'package:sellers_bay/widgets/form_inputs/image.dart';
+import 'package:sellers_bay/widgets/form_inputs/location.dart';
 import 'package:sellers_bay/widgets/ui_elements/adaptive_progress_indicator.dart';
 import '../models/product.dart';
 import '../scoped-models/main.dart';
@@ -20,7 +22,8 @@ class _ProductEditPageState extends State<ProductEditPage> {
     'title': null,
     'description': null,
     'price': null,
-    'image': null
+    'image': null,
+    'location': null,
   };
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final _titleFocusNode = FocusNode();
@@ -148,7 +151,7 @@ class _ProductEditPageState extends State<ProductEditPage> {
               SizedBox(
                 height: 10.0,
               ),
-              //LocationInput(),
+             LocationInput1(_setLocation, product),
               SizedBox(
                 height: 10.0,
               ),
@@ -168,6 +171,10 @@ class _ProductEditPageState extends State<ProductEditPage> {
     _formData['image'] = image;
   }
 
+  void _setLocation(LocationDataPro locData) {
+    _formData['location'] = locData;
+  }
+
   void _submitForm(
       Function addProduct, Function updateProduct, Function setSelectedProduct,
       [int selectedProductIndex]) {
@@ -182,6 +189,7 @@ class _ProductEditPageState extends State<ProductEditPage> {
         _descriptionTextController.text,
         _formData['image'],
         double.parse(_priceTextController.text.replaceFirst(RegExp(r','), '.')),
+        _formData['location'],
       ).then((bool success) {
         if (success) {
           Navigator.pushReplacementNamed(context, '/products');
@@ -209,6 +217,7 @@ class _ProductEditPageState extends State<ProductEditPage> {
         _descriptionTextController.text,
         _formData['image'],
         double.parse(_priceTextController.text.replaceFirst(RegExp(r','), '.')),
+        _formData['location'],
       ).then((_) => Navigator.pushReplacementNamed(context, '/products'));
     }
   }
@@ -220,7 +229,7 @@ class _ProductEditPageState extends State<ProductEditPage> {
         final Widget pageContent =
             _buildPageContent(context, model.selectedProduct);
         return model.selectedProductIndex == -1
-            ? Material(child: pageContent)
+            ? pageContent
             : Scaffold(
                 appBar: AppBar(
                   title: Text('Edit Product'),

@@ -50,8 +50,7 @@ class ProductCard extends StatelessWidget {
                     : Icons.favorite_border),
                 color: Colors.red,
                 onPressed: () {
-                  model.selectProduct(product.id);
-                  model.toggleProductFavoriteStatus();
+                  model.toggleProductFavoriteStatus(product);
                 },
               )
             ]);
@@ -76,7 +75,7 @@ class ProductCard extends StatelessWidget {
           ),
           _buildTitlePriceRow(),
           SizedBox(height: 10.0),
-          AddressTag('Chandni Chowk, Delhi'),
+          AddressTag(product.locationData.address),
           _buildActionButtons(context)
         ],
       ),

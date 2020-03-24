@@ -6,12 +6,12 @@ import '../models/product.dart';
 class ProductPage extends StatelessWidget {
   final Product product;
   ProductPage(this.product);
-  Widget _buildAddressPriceRow(double price) {
+  Widget _buildAddressPriceRow(String address, double price) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         Text(
-          'Chandni Chowk, Delhi',
+          address,
           style: TextStyle(color: Colors.grey),
         ),
         Container(
@@ -46,7 +46,7 @@ class ProductPage extends StatelessWidget {
               expandedHeight: 256.0,
               pinned: true,
               flexibleSpace: FlexibleSpaceBar(
-                title: Flexible(child: Text(product.title)),
+                title: Text(product.title),
                 background: Hero(
                   tag: product.id,
                   transitionOnUserGestures: true,
@@ -69,7 +69,8 @@ class ProductPage extends StatelessWidget {
                 padding: EdgeInsets.all(10.0),
                 child: TitleDefault(product.title),
               ),
-              _buildAddressPriceRow(product.price),
+              _buildAddressPriceRow(
+                  product.locationData.address, product.price),
               Container(
                 padding: EdgeInsets.all(10.0),
                 child: Text(

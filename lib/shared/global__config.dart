@@ -1,1 +1,1 @@
-final String apiKey = null;
+final String apiKey = '';

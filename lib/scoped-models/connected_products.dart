@@ -7,6 +7,7 @@ import 'package:scoped_model/scoped_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:sellers_bay/models/auth.dart';
+import 'package:sellers_bay/models/location.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/product.dart';
 import '../models/user.dart';
@@ -90,6 +91,11 @@ class ProductsModel extends ConnectedProductsModel {
             image: productData['imageUrl'],
             imagePath: productData['imagePath'],
             price: productData['price'],
+            locationData: LocationDataPro(
+              address: productData['loc_address'],
+              latitude: productData['loc_lat'],
+              longitude: productData['loc_lng'],
+            ),
             userEmail: productData['userEmail'],
             userId: productData['userId'],
             isFavorite: productData['wishlistUsers'] == null
@@ -149,8 +155,8 @@ class ProductsModel extends ConnectedProductsModel {
     }
   }
 
-  Future<bool> addProduct(
-      String title, String description, File image, double price) async {
+  Future<bool> addProduct(String title, String description, File image,
+      double price, LocationDataPro locData) async {
     _isLoading = true;
     notifyListeners();
     final uploadData = await uploadImage(image);
@@ -166,7 +172,10 @@ class ProductsModel extends ConnectedProductsModel {
       'imageUrl': uploadData['imageUrl'],
       'price': price,
       'userEmail': _authenticatedUser.email,
-      'userId': _authenticatedUser.id
+      'userId': _authenticatedUser.id,
+      'loc_lat': locData.latitude,
+      'loc_lng': locData.longitude,
+      'loc_address': locData.address,
     };
     try {
       final http.Response response = await http.post(
@@ -185,6 +194,7 @@ class ProductsModel extends ConnectedProductsModel {
           image: uploadData['imageUrl'],
           imagePath: uploadData['imagePath'],
           price: price,
+          locationData: locData,
           userEmail: _authenticatedUser.email,
           userId: _authenticatedUser.id);
       _products.add(newProduct);
@@ -200,7 +210,7 @@ class ProductsModel extends ConnectedProductsModel {
   }
 
   Future<bool> updateProduct(
-      String title, String description, File image, double price) async {
+      String title, String description, File image, double price, LocationDataPro locData) async {
     _isLoading = true;
     notifyListeners();
     String imageUrl = selectedProduct.image;
@@ -220,6 +230,9 @@ class ProductsModel extends ConnectedProductsModel {
       'imageUrl': imageUrl,
       'imagePath': imagePath,
       'price': price,
+      'loc_lat': locData.latitude,
+      'loc_lng': locData.longitude,
+      'loc_address': locData.address,
       'userEmail': selectedProduct.userEmail,
       'userId': selectedProduct.userId
     };
@@ -236,6 +249,7 @@ class ProductsModel extends ConnectedProductsModel {
           image: imageUrl,
           imagePath: imagePath,
           price: price,
+          locationData: locData,
           userEmail: selectedProduct.userEmail,
           userId: selectedProduct.userId);
       _products[selectedProductIndex] = updatedProduct;
@@ -267,30 +281,34 @@ class ProductsModel extends ConnectedProductsModel {
     });
   }
 
-  void toggleProductFavoriteStatus() async {
+  void toggleProductFavoriteStatus(Product toggledProduct) async {
     final bool isCurrentlyFavorite = selectedProduct.isFavorite;
     final bool newFavoriteStatus = !isCurrentlyFavorite;
+    final int toggledProductIndex = _products.indexWhere((Product product) {
+      return product.id == toggledProduct.id;
+    });
     final Product updatedProduct = Product(
-        id: selectedProduct.id,
-        title: selectedProduct.title,
-        description: selectedProduct.description,
-        price: selectedProduct.price,
-        image: selectedProduct.image,
-        imagePath: selectedProduct.imagePath,
-        userEmail: selectedProduct.userEmail,
-        userId: selectedProduct.userId,
+        id: toggledProduct.id,
+        title: toggledProduct.title,
+        description: toggledProduct.description,
+        price: toggledProduct.price,
+        image: toggledProduct.image,
+        imagePath: toggledProduct.imagePath,
+        userEmail: toggledProduct.userEmail,
+        userId: toggledProduct.userId,
+        locationData: toggledProduct.locationData,
         isFavorite: newFavoriteStatus);
-    _products[selectedProductIndex] = updatedProduct;
+    _products[toggledProductIndex] = updatedProduct;
     notifyListeners();
     http.Response response;
     if (newFavoriteStatus) {
       response = await http.put(
-        'https://sellers-bay1.firebaseio.com/products/${selectedProduct.id}/wishlistUsers/${_authenticatedUser.id}.json?auth=${_authenticatedUser.token}',
+        'https://sellers-bay1.firebaseio.com/products/${toggledProduct.id}/wishlistUsers/${_authenticatedUser.id}.json?auth=${_authenticatedUser.token}',
         body: json.encode(true),
       );
     } else {
       response = await http.delete(
-        'https://sellers-bay1.firebaseio.com/products/${selectedProduct.id}/wishlistUsers/${_authenticatedUser.id}.json?auth=${_authenticatedUser.token}',
+        'https://sellers-bay1.firebaseio.com/products/${toggledProduct.id}/wishlistUsers/${_authenticatedUser.id}.json?auth=${_authenticatedUser.token}',
       );
     }
     print(response.statusCode);
@@ -304,8 +322,9 @@ class ProductsModel extends ConnectedProductsModel {
           imagePath: selectedProduct.imagePath,
           userEmail: selectedProduct.userEmail,
           userId: selectedProduct.userId,
+          locationData: selectedProduct.locationData,
           isFavorite: !newFavoriteStatus);
-      _products[selectedProductIndex] = updatedProduct;
+      _products[toggledProductIndex] = updatedProduct;
       notifyListeners();
     }
   }
