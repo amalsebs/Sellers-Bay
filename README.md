@@ -19,11 +19,11 @@ It takes the following input from the user to add a new product-
 
  Screeenshots of App - 
  
- <img src="screenshots/signup-page.png" width="40%" height="40%">
- <img src="screenshots/products.png" width="40%" height="40%">
- <img src="screenshots/product-description.png" width="40%" height="40%">
- <img src="screenshots/add-product.png" width="40%" height="40%">
- <img src="screenshots/edit-products-list.png" width="40%" height="40%">
+ <img src="screenshots/signup-page.png" width="25%" height="25%">
+ <img src="screenshots/products.png" width="25%" height="25%">
+ <img src="screenshots/product-description.png" width="25%" height="25%">
+ <img src="screenshots/add-product.png" width="25%" height="25%">
+ <img src="screenshots/edit-products-list.png" width="25%" height="25%">
 
  
 
