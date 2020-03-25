@@ -19,11 +19,11 @@ It takes the following input from the user to add a new product-
 
  Screeenshots of App - 
  
- ![Signup Page](screenshots/signup-page.png)
- ![Products Page](screenshots/products.png)
- ![Product Description Page](screenshots/product-description.png)
- ![Add Product Page](screenshots/add-product.png)
- ![Edit Products Page](screenshots/edit-products-list.png)
+ ![Signup Page](screenshots/signup-page.png){:height="50%" width="50%"}
+ ![Products Page](screenshots/products.png){:height="50%" width="50%"}
+ ![Product Description Page](screenshots/product-description.png){:height="50%" width="50%"}
+ ![Add Product Page](screenshots/add-product.png){:height="50%" width="50%"}
+ ![Edit Products Page](screenshots/edit-products-list.png){:height="50%" width="50%"}
 
  
 
