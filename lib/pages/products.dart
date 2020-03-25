@@ -39,9 +39,8 @@ class _ProductsPageState extends State<ProductsPage> {
             leading: Icon(Icons.edit),
             title: Text('Manage Products'),
             onTap: () {
-              Navigator.pushReplacementNamed(context, '/admin').then((_){
-                widget.model.selectProduct(null);
-              });
+              //widget.model.selectProduct(null);
+              Navigator.pushReplacementNamed(context, '/admin');
             },
           ),
           Divider(),

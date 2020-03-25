@@ -1,6 +1,7 @@
 # Sellers Bay
 
 A mobile application made in flutter with firebase realtime database as backend.
+
 Also cloud functions are used - 
  * To upload an image to the cloud
  * To delete an image automatically from the cloud
@@ -18,7 +19,11 @@ It takes the following input from the user to add a new product-
 
  Screeenshots of App - 
  
-
+ ![Signup Page](screenshots/signup-page.png)
+ ![Products Page](screenshots/products.png)
+ ![Product Description Page](screenshots/product-description.png)
+ ![Add Product Page](screenshots/add-product.png)
+ ![Edit Products Page](screenshots/edit-products-list.png)
 
  
 
